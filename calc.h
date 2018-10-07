@@ -1,5 +1,5 @@
-#ifndef CALC_H__
-#define CALC_H__
+#ifndef CALC_H
+#define CALC_H
 
 double parse(char*);
 
