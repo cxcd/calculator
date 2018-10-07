@@ -11,6 +11,9 @@ F --> (E) | number
 Include the "calc.h" header file in any program and call the parser using the function "parse()", for example: 
 
 ```
+#include <stdio.h>
+#include "calc.h"
+
 int main() {
   printf ("Result: %g\n", "12.2/32+(2^4)");
   return 0;
