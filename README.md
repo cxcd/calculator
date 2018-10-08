@@ -15,7 +15,7 @@ Include the "calc.h" header file in any program and call the parser using the fu
 #include "calc.h"
 
 int main() {
-  printf ("Result: %g\n", "12.2/32+(2^4)");
+  printf ("Result: %g\n", parse("12.2/32+(2^4)"));
   return 0;
 }
 ```
