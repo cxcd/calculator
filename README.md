@@ -8,14 +8,14 @@ X --> X ^ F | F
 F --> (E) | number
 
 ## Usage
-Include the "calc.h" header file in any program and call the parser using the function "parse()", for example: 
+Include the "calc.h" header file in any program and call the parser using the function "calc_parse()", for example: 
 
 ```
 #include <stdio.h>
 #include "calc.h"
 
 int main() {
-  printf ("Result: %g\n", parse("12.2/32+(2^4)"));
+  printf ("Result: %g\n", calc_parse("12.2/32+(2^4)"));
   return 0;
 }
 ```
