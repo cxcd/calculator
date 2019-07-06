@@ -191,7 +191,7 @@ char *remove_whitespace(char *input) {
     return output;
 }
 /* Initialize the struct and wrap the call */
-double parse(char *arg) {
+double calc_parse(char *arg) {
 	char *init_input = remove_whitespace(arg);
 	parse_params params = {init_input[0], init_input, 0, 0};
 	return parse_expression(&params);
