@@ -64,112 +64,112 @@ void usage() {
 }
 
 /* Increment the input and read the current symbol*/
-void consume(parse_params *paramsPtr) {
-	paramsPtr->curr_index = paramsPtr->curr_index + 1;
-	paramsPtr->curr_char = paramsPtr->m_input[paramsPtr->curr_index];
+void consume(parse_params *params_ptr) {
+	params_ptr->curr_index = params_ptr->curr_index + 1;
+	params_ptr->curr_char = params_ptr->m_input[params_ptr->curr_index];
 }
 
 /* Return the current symbol in the input without incrementing */
-enum Symbol peek(parse_params *paramsPtr) {
-	return char_to_symbol(paramsPtr->m_input[paramsPtr->curr_index]);
+enum Symbol peek(parse_params *params_ptr) {
+	return char_to_symbol(params_ptr->m_input[params_ptr->curr_index]);
 }
 
 /* Recursive Descent Parser */
-double parse_expression(parse_params *paramsPtr);
+double parse_expression(parse_params *params_ptr);
 
-double parse_number(parse_params *paramsPtr) {
-	double num = 0, decimal = 0;
+double parse_number(parse_params *params_ptr) {
+	double result = 0, fractional = 0;
 	int length = 0;
-	while(peek(paramsPtr) == NUMBER) {
-		num = num * 10 + (paramsPtr->curr_char - '0');
-		consume(paramsPtr);
+	while(peek(params_ptr) == NUMBER) {
+		result = result * 10 + (params_ptr->curr_char - '0');
+		consume(params_ptr);
 	}
-	if (peek(paramsPtr) == POINT) {
-		consume(paramsPtr);
-		if (peek(paramsPtr) != NUMBER) {
-			err("Syntax: Unexpected decimal point");
+	if (peek(params_ptr) == POINT) {
+		consume(params_ptr);
+		if (peek(params_ptr) != NUMBER) {
+			err("Syntax: Unexpected decimal separator");
 		}
-		while(peek(paramsPtr) == NUMBER) {
-			decimal = decimal * 10 + (paramsPtr->curr_char - '0');
+		while(peek(params_ptr) == NUMBER) {
+			fractional = fractional * 10 + (params_ptr->curr_char - '0');
 			length++;
-			consume(paramsPtr);
+			consume(params_ptr);
 		}
 	}
-	if (decimal > 0) {
-		num = num + (decimal/pow(10, length));
+	if (fractional > 0) {
+		result = result + (fractional/pow(10, length));
 	}
-	if (peek(paramsPtr) == L_PARENS) {
+	if (peek(params_ptr) == L_PARENS) {
 		err("Syntax: Unexpected open parenthesis");
-	} else if (peek(paramsPtr) == R_PARENS && !paramsPtr->expect_parens) {
+	} else if (peek(params_ptr) == R_PARENS && !params_ptr->expect_parens) {
 		err("Syntax: Unexpected closed parenthesis");
 	}
-	return num;
+	return result;
 }
 
-double parse_factor(parse_params *paramsPtr) {
+double parse_factor(parse_params *params_ptr) {
 	int sign = 1;
 	double expression = 0;
-	if (peek(paramsPtr) == MINUS) {
-		consume(paramsPtr);
+	if (peek(params_ptr) == MINUS) {
+		consume(params_ptr);
 		sign = -1;
 	} else {
 		sign = 1;
 	}	
-	if (peek(paramsPtr) == NUMBER) {
-		return sign * parse_number(paramsPtr);
-	} else if (peek(paramsPtr) == L_PARENS) {
-		paramsPtr->expect_parens = 1;
-		consume(paramsPtr);
-		expression = parse_expression(paramsPtr);
-		if (peek(paramsPtr) != R_PARENS) {
+	if (peek(params_ptr) == NUMBER) {
+		return sign * parse_number(params_ptr);
+	} else if (peek(params_ptr) == L_PARENS) {
+		params_ptr->expect_parens = 1;
+		consume(params_ptr);
+		expression = parse_expression(params_ptr);
+		if (peek(params_ptr) != R_PARENS) {
 			err("Syntax: Expected closed parenthesis");
 		}
-		consume(paramsPtr);
-		paramsPtr->expect_parens = 0;
+		consume(params_ptr);
+		params_ptr->expect_parens = 0;
 		return sign * expression;
-	} else if (peek(paramsPtr) == POINT) {
-		err("Syntax: Unexpected decimal point");
+	} else if (peek(params_ptr) == POINT) {
+		err("Syntax: Unexpected decimal separator");
 	} else {
 		err("Syntax");
 	}
 }
 
-double parse_exponent(parse_params *paramsPtr) {
-	double factor = parse_factor(paramsPtr);
+double parse_exponent(parse_params *params_ptr) {
+	double factor = parse_factor(params_ptr);
 	while (1) {
-		if (peek(paramsPtr) == POW) {
-			consume(paramsPtr);
-			factor = pow(factor, parse_factor(paramsPtr));
+		if (peek(params_ptr) == POW) {
+			consume(params_ptr);
+			factor = pow(factor, parse_factor(params_ptr));
 		} else {
 			return factor;
 		}
 	}
 }
 
-double parse_term(parse_params *paramsPtr) {
-	double exponent = parse_exponent(paramsPtr);
+double parse_term(parse_params *params_ptr) {
+	double exponent = parse_exponent(params_ptr);
 	while (1) {
-		if (peek(paramsPtr) == MULTIPLY) {
-			consume(paramsPtr);
-			exponent = exponent * parse_exponent(paramsPtr);
-		} else if (peek(paramsPtr) == DIVIDE) {
-			consume(paramsPtr);
-			exponent = exponent / parse_exponent(paramsPtr);
+		if (peek(params_ptr) == MULTIPLY) {
+			consume(params_ptr);
+			exponent = exponent * parse_exponent(params_ptr);
+		} else if (peek(params_ptr) == DIVIDE) {
+			consume(params_ptr);
+			exponent = exponent / parse_exponent(params_ptr);
 		} else {
 			return exponent;
 		}
 	}
 }
 
-double parse_expression(parse_params *paramsPtr) {
-	double term = parse_term(paramsPtr);
+double parse_expression(parse_params *params_ptr) {
+	double term = parse_term(params_ptr);
 	while(1) {
-		if (peek(paramsPtr) == PLUS) {
-			consume(paramsPtr);
-			term = term + parse_term(paramsPtr);
-		} else if (peek(paramsPtr) == MINUS) {
-			consume(paramsPtr);
-			term = term - parse_term(paramsPtr);
+		if (peek(params_ptr) == PLUS) {
+			consume(params_ptr);
+			term = term + parse_term(params_ptr);
+		} else if (peek(params_ptr) == MINUS) {
+			consume(params_ptr);
+			term = term - parse_term(params_ptr);
 		} else {
 			return term;
 		}
